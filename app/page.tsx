@@ -11,7 +11,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Users, ArrowRight } from "lucide-react"
 import { motion } from "framer-motion"
-import { supabase } from "@/lib/supabase"
 
 export default function GentlemenRoundtable() {
   const [formData, setFormData] = useState({
@@ -26,8 +25,6 @@ export default function GentlemenRoundtable() {
   const [ratingCount, setRatingCount] = useState(524)
   const [averageRating, setAverageRating] = useState(4.8)
   const [activeMonth, setActiveMonth] = useState("july")
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [submitMessage, setSubmitMessage] = useState("")
 
   // Countdown timer state
   const [timeLeft, setTimeLeft] = useState({
@@ -62,46 +59,11 @@ export default function GentlemenRoundtable() {
     return () => clearInterval(timer)
   }, [])
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    
-    // Validate form data
-    if (!formData.fullName || !formData.email || !formData.gender || !formData.country) {
-      setSubmitMessage("Please fill in all fields")
-      return
-    }
-
-    setIsSubmitting(true)
-    setSubmitMessage("")
-
-    try {
-      // Call the Supabase Edge Function
-      const { data, error } = await supabase.functions.invoke('send-invitation-email', {
-        body: formData
-      })
-
-      if (error) {
-        throw error
-      }
-
-      // Success
-      setSubmissionCount((prev) => prev + 1)
-      setSubmitMessage("Thank you! Your invitation request has been sent successfully.")
-      
-      // Reset form
-      setFormData({
-        fullName: "",
-        email: "",
-        gender: "",
-        country: "",
-      })
-
-    } catch (error) {
-      console.error("Error submitting form:", error)
-      setSubmitMessage("Sorry, there was an error sending your request. Please try again.")
-    } finally {
-      setIsSubmitting(false)
-    }
+    setSubmissionCount((prev) => prev + 1)
+    // Handle form submission logic here
+    console.log("Form submitted:", formData)
   }
 
   const handleRating = (value: number) => {
@@ -422,26 +384,11 @@ export default function GentlemenRoundtable() {
                   >
                     <Button
                       type="submit"
-                      disabled={isSubmitting}
                       className="w-full bg-gradient-to-r from-gold-600 to-gold-700 hover:from-gold-700 hover:to-gold-800 text-black font-semibold py-3 shadow-lg hover:shadow-xl transition-all duration-300"
                     >
-                      {isSubmitting ? "Sending..." : "Request Invitation"}
+                      Request Invitation
                     </Button>
                   </motion.div>
-
-                  {submitMessage && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className={`text-center p-3 rounded-md ${
-                        submitMessage.includes("successfully") 
-                          ? "bg-green-900/50 text-green-400 border border-green-700" 
-                          : "bg-red-900/50 text-red-400 border border-red-700"
-                      }`}
-                    >
-                      {submitMessage}
-                    </motion.div>
-                  )}
                 </form>
 
                 <motion.div
