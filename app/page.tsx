@@ -26,6 +26,10 @@ export default function GentlemenRoundtable() {
   const [averageRating, setAverageRating] = useState(4.8)
   const [activeMonth, setActiveMonth] = useState("july")
 
+  // Form submission state
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitMessage, setSubmitMessage] = useState("")
+
   // Countdown timer state
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
@@ -59,11 +63,48 @@ export default function GentlemenRoundtable() {
     return () => clearInterval(timer)
   }, [])
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setSubmissionCount((prev) => prev + 1)
-    // Handle form submission logic here
-    console.log("Form submitted:", formData)
+    
+    // Validate form data
+    if (!formData.fullName || !formData.email || !formData.gender || !formData.country) {
+      setSubmitMessage("Please fill in all fields")
+      return
+    }
+
+    setIsSubmitting(true)
+    setSubmitMessage("")
+
+    try {
+      const response = await fetch('/api/send-invitation', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+
+      const result = await response.json()
+
+      if (response.ok) {
+        setSubmissionCount((prev) => prev + 1)
+        setSubmitMessage("Thank you! Your invitation request has been sent successfully.")
+        // Reset form
+        setFormData({
+          fullName: "",
+          email: "",
+          gender: "",
+          country: "",
+        })
+      } else {
+        setSubmitMessage(result.error || "Failed to send invitation request. Please try again.")
+      }
+    } catch (error) {
+      console.error('Form submission error:', error)
+      setSubmitMessage("An error occurred. Please try again later.")
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const handleRating = (value: number) => {
@@ -384,11 +425,27 @@ export default function GentlemenRoundtable() {
                   >
                     <Button
                       type="submit"
+                      disabled={isSubmitting}
                       className="w-full bg-gradient-to-r from-gold-600 to-gold-700 hover:from-gold-700 hover:to-gold-800 text-black font-semibold py-3 shadow-lg hover:shadow-xl transition-all duration-300"
                     >
-                      Request Invitation
+                      {isSubmitting ? "Sending..." : "Request Invitation"}
                     </Button>
                   </motion.div>
+
+                  {/* Success/Error Message */}
+                  {submitMessage && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className={`text-center p-3 rounded-md ${
+                        submitMessage.includes("successfully") 
+                          ? "bg-green-900/50 text-green-400 border border-green-700" 
+                          : "bg-red-900/50 text-red-400 border border-red-700"
+                      }`}
+                    >
+                      {submitMessage}
+                    </motion.div>
+                  )}
                 </form>
 
                 <motion.div
