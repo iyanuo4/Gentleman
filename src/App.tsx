@@ -1,8 +1,4 @@
-"use client"
-
-import type React from "react"
-
-import { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -76,29 +72,18 @@ export default function GentlemenRoundtable() {
     setSubmitMessage("")
 
     try {
-      const response = await fetch('/api/send-invitation', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
+      // Simulate API call for demo purposes
+      await new Promise(resolve => setTimeout(resolve, 2000))
+      
+      setSubmissionCount((prev) => prev + 1)
+      setSubmitMessage("Thank you! Your invitation request has been sent successfully.")
+      // Reset form
+      setFormData({
+        fullName: "",
+        email: "",
+        gender: "",
+        country: "",
       })
-
-      const result = await response.json()
-
-      if (response.ok) {
-        setSubmissionCount((prev) => prev + 1)
-        setSubmitMessage("Thank you! Your invitation request has been sent successfully.")
-        // Reset form
-        setFormData({
-          fullName: "",
-          email: "",
-          gender: "",
-          country: "",
-        })
-      } else {
-        setSubmitMessage(result.error || "Failed to send invitation request. Please try again.")
-      }
     } catch (error) {
       console.error('Form submission error:', error)
       setSubmitMessage("An error occurred. Please try again later.")
@@ -147,7 +132,7 @@ export default function GentlemenRoundtable() {
         <motion.div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
-            backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6)), url('/images/luxury-gentleman-hero.png')`,
+            backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6)), url('https://images.pexels.com/photos/1043474/pexels-photo-1043474.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop')`,
           }}
           initial={{ scale: 1.1 }}
           animate={{ scale: 1 }}
@@ -163,7 +148,7 @@ export default function GentlemenRoundtable() {
           }}
           transition={{
             duration: 4,
-            repeat: Number.POSITIVE_INFINITY,
+            repeat: Infinity,
             ease: "easeInOut",
           }}
         >
@@ -180,7 +165,7 @@ export default function GentlemenRoundtable() {
           }}
           transition={{
             duration: 6,
-            repeat: Number.POSITIVE_INFINITY,
+            repeat: Infinity,
             ease: "easeInOut",
             delay: 1,
           }}
@@ -194,7 +179,7 @@ export default function GentlemenRoundtable() {
           }}
           transition={{
             duration: 8,
-            repeat: Number.POSITIVE_INFINITY,
+            repeat: Infinity,
             ease: "linear",
           }}
         />
@@ -214,7 +199,7 @@ export default function GentlemenRoundtable() {
             }}
             transition={{
               duration: 3 + i * 0.5,
-              repeat: Number.POSITIVE_INFINITY,
+              repeat: Infinity,
               ease: "easeInOut",
               delay: i * 0.3,
             }}
@@ -266,7 +251,7 @@ export default function GentlemenRoundtable() {
                       "0 0 20px rgba(251, 191, 36, 0.3)",
                     ],
                   }}
-                  transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
+                  transition={{ duration: 2, repeat: Infinity }}
                 >
                   <CardTitle className="text-gold-400 font-serif text-xl">This Month's Theme</CardTitle>
                   <h3 className="text-2xl font-serif text-white">"The Return of the Gentleman"</h3>
@@ -288,7 +273,7 @@ export default function GentlemenRoundtable() {
                       }}
                       transition={{
                         duration: 2,
-                        repeat: Number.POSITIVE_INFINITY,
+                        repeat: Infinity,
                         delay: index * 0.2,
                       }}
                     >
@@ -332,7 +317,6 @@ export default function GentlemenRoundtable() {
             <Card className="bg-black/95 border-gray-700 max-w-2xl mx-auto shadow-2xl backdrop-blur-sm">
               <CardContent className="p-8">
                 <form onSubmit={handleSubmit} className="space-y-6">
-                  {/* Keep existing form fields but wrap each in motion.div */}
                   <motion.div
                     initial={{ x: -20, opacity: 0 }}
                     whileInView={{ x: 0, opacity: 1 }}
@@ -460,7 +444,7 @@ export default function GentlemenRoundtable() {
                     <motion.span
                       className="text-lg font-semibold"
                       animate={{ scale: [1, 1.05, 1] }}
-                      transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
+                      transition={{ duration: 2, repeat: Infinity }}
                     >
                       {submissionCount.toLocaleString()}
                     </motion.span>
